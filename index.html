@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cumplimiento Equipo — MP Vendedores</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; color: #333; font-size: 13px; }
+header { background: #009ee3; color: white; padding: 16px 24px; }
+header h1 { font-size: 1.3rem; font-weight: 700; }
+header p { font-size: 0.82rem; opacity: 0.9; margin-top: 3px; }
+.toolbar { background: white; padding: 12px 24px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; }
+.toolbar label { font-weight: 600; font-size: 0.82rem; color: #555; }
+select { padding: 6px 12px; border-radius: 6px; border: 1.5px solid #ccc; font-size: 0.82rem; cursor: pointer; outline: none; }
+select:focus { border-color: #009ee3; }
+.leyenda { display: flex; gap: 12px; align-items: center; font-size: 0.75rem; color: #666; }
+.dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 4px; }
+.wrap { padding: 20px 24px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
+thead th { background: #1a1a2e; color: white; padding: 10px 8px; text-align: center; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+thead th.col-asesor { text-align: left; padding-left: 14px; min-width: 160px; }
+thead th.col-tl { text-align: left; min-width: 130px; }
+thead th.col-cat { min-width: 110px; }
+tbody tr { border-bottom: 1px solid #f0f0f0; transition: background 0.1s; }
+tbody tr:hover { background: #f7f9ff; }
+td { padding: 8px 8px; text-align: center; font-size: 0.78rem; }
+td.col-asesor { text-align: left; padding-left: 14px; font-weight: 600; color: #222; }
+td.col-tl { text-align: left; color: #666; font-size: 0.74rem; }
+td.mes { font-weight: 600; min-width: 70px; border-radius: 4px; margin: 2px; }
+td.mes.verde  { background: #d4edda; color: #155724; }
+td.mes.amarillo { background: #fff3cd; color: #856404; }
+td.mes.rojo   { background: #f8d7da; color: #721c24; }
+td.mes.vacio  { background: #f5f5f5; color: #bbb; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+.badge.cumple  { background: #d4edda; color: #155724; }
+.badge.regular { background: #fff3cd; color: #856404; }
+.badge.riesgo  { background: #f8d7da; color: #721c24; }
+.badge.sin_data { background: #f0f0f0; color: #999; }
+.sep-row td { background: #f0f2f5; color: #888; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; padding: 5px 14px; text-align: left; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>% Cumplimiento — Equipo MP Vendedores</h1>
+  <p>Sep 2025 → Abr 2026</p>
+</header>
+
+<div class="toolbar">
+  <label>Team Lider:</label>
+  <select id="filtroTL" onchange="render()">
+    <option value="">Todos</option>
+    <option>Analia Goias</option>
+    <option>Francisco Quinteros</option>
+    <option>Maria Jose Ochoa</option>
+    <option>Sofia Zhuang</option>
+  </select>
+  <div class="leyenda">
+    <span><span class="dot" style="background:#d4edda;border:1px solid #155724"></span>≥ 100%</span>
+    <span><span class="dot" style="background:#fff3cd;border:1px solid #856404"></span>70% – 99%</span>
+    <span><span class="dot" style="background:#f8d7da;border:1px solid #721c24"></span>&lt; 70%</span>
+    <span><span class="dot" style="background:#f5f5f5;border:1px solid #ccc"></span>Sin dato</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="col-asesor">Asesor</th>
+        <th class="col-tl">Team Lider</th>
+        <th class="col-cat">Estado</th>
+        <th>Sep 25</th>
+        <th>Oct 25</th>
+        <th>Nov 25</th>
+        <th>Dic 25</th>
+        <th>Ene 26</th>
+        <th>Feb 26</th>
+        <th>Mar 26</th>
+        <th>Abr 26</th>
+      </tr>
+    </thead>
+    <tbody id="cuerpo"></tbody>
+  </table>
+</div>
+
+<script>
+const MESES = ['Sep 25','Oct 25','Nov 25','Dic 25','Ene 26','Feb 26','Mar 26','Abr 26'];
+
+const ASESORES = [
+  { nombre: 'Agustin Diz',          tl: 'Maria Jose Ochoa',    datos: [7.53,196.00,30.12,12.51,111.87,81.87,79.94,-0.30] },
+  { nombre: 'Alejandro Diaz',        tl: 'Analia Goias',        datos: [30.97,45.86,-11.24,188.80,96.87,-2.39,-0.69,0.00] },
+  { nombre: 'Analia Maisonnave',     tl: 'Analia Goias',        datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Azul Pacioni',          tl: 'Francisco Quinteros', datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Barbara Nuñez',         tl: 'Francisco Quinteros', datos: [null,null,null,0.00,196.87,-8.05,52.12,-41.46] },
+  { nombre: 'Camila Coca',           tl: 'Analia Goias',        datos: [null,27.78,0.00,105.84,2.65,0.00,-5.08,20.49] },
+  { nombre: 'Carolina Delgado',      tl: 'Maria Jose Ochoa',    datos: [226.57,742.93,119.27,80.42,8.81,18.77,-3.48,-2.64] },
+  { nombre: 'Catalina Fernandez',    tl: 'Analia Goias',        datos: [325.44,136.42,40.81,36.13,12.86,-3.45,23.95,-2.00] },
+  { nombre: 'Cristina Hsieh',        tl: 'Sofia Zhuang',        datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Diana Fraser',          tl: 'Francisco Quinteros', datos: [null,null,null,0.00,89.43,17.23,-2.96,10.47] },
+  { nombre: 'Diego Moreno',          tl: 'Analia Goias',        datos: [109.59,476.01,-7.22,56.41,33.09,56.49,29.91,-3.54] },
+  { nombre: 'Emanuel Dursi',         tl: 'Analia Goias',        datos: [91.10,165.34,31.24,17.01,184.43,84.32,27.45,-8.10] },
+  { nombre: 'Federico Vitabile',     tl: 'Analia Goias',        datos: [75.08,93.86,72.90,93.07,32.60,-0.62,12.17,7.68] },
+  { nombre: 'Francelys Perez',       tl: 'Francisco Quinteros', datos: [null,null,null,0.00,-1.03,33.35,117.97,0.00] },
+  { nombre: 'Francisco Quinteros',   tl: 'Maria Jose Ochoa',    datos: [75.73,276.45,67.47,79.48,null,null,null,null] },
+  { nombre: 'Giselda Allende',       tl: 'Analia Goias',        datos: [null,null,null,0.00,112.89,82.17,73.89,10.50] },
+  { nombre: 'Joaquin Lescano',       tl: 'Francisco Quinteros', datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Juan Cruz Rial',        tl: 'Maria Jose Ochoa',    datos: [-8.35,181.11,-0.87,43.51,57.93,71.95,172.94,-6.05] },
+  { nombre: 'Julian Torres',         tl: 'Maria Jose Ochoa',    datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Luciana Pisacco',       tl: 'Francisco Quinteros', datos: [null,null,null,0.00,0.00,25.22,71.84,-4.07] },
+  { nombre: 'Luis Alberto Quiroga',  tl: 'Analia Goias',        datos: [272.94,60.39,1.20,27.94,26.85,-17.83,0.00,0.00] },
+  { nombre: 'Manuel Elizarraga',     tl: 'Maria Jose Ochoa',    datos: [25.26,354.19,17.36,162.88,278.57,29.55,62.63,32.28] },
+  { nombre: 'Mariana Gonzalez',      tl: 'Maria Jose Ochoa',    datos: [null,null,null,0.00,238.18,-42.18,7.34,0.00] },
+  { nombre: 'Matias Mesiano',        tl: 'Analia Goias',        datos: [11.22,245.86,16.83,530.50,15.28,116.79,0.00,0.00] },
+  { nombre: 'Micaela Marsuzi',       tl: 'Francisco Quinteros', datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Niurka Pinzon',         tl: 'Francisco Quinteros', datos: [null,null,null,0.00,14.19,0.00,8.02,0.00] },
+  { nombre: 'Rocio Angueira',        tl: 'Maria Jose Ochoa',    datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Rocio Gonzalez',        tl: 'Maria Jose Ochoa',    datos: [118.32,221.53,0.00,18.80,37.18,17.85,0.00,0.00] },
+  { nombre: 'Sebastian Jansa',       tl: 'Francisco Quinteros', datos: [null,null,null,0.00,351.84,41.03,170.65,3.21] },
+  { nombre: 'Sofia Zhuang',          tl: 'Sofia Zhuang',        datos: [null,null,null,null,null,null,null,null] },
+  { nombre: 'Soledad Maydana',       tl: 'Maria Jose Ochoa',    datos: [56.79,134.74,7.93,71.97,13.44,78.45,31.63,0.00] }
+];
+
+function promedio(datos) {
+  const vals = datos.filter(v => v !== null);
+  if (!vals.length) return null;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+// Promedio de Ene 26, Feb 26, Mar 26 (índices 4, 5, 6 — excluye Abr 26)
+function promedioClasif(datos) {
+  const vals = [datos[4], datos[5], datos[6]].filter(v => v !== null);
+  if (!vals.length) return null;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+function categoria(datos) {
+  const avg = promedioClasif(datos);
+  if (avg === null) return { key: 'sin_data', label: 'Sin datos', orden: 3 };
+  if (avg >= 70)   return { key: 'cumple',   label: '✓ Cumpliendo', orden: 0 };
+  if (avg >= 20)   return { key: 'regular',  label: '~ Regular',    orden: 1 };
+  return              { key: 'riesgo',   label: '✗ En riesgo',  orden: 2 };
+}
+
+function celda(val) {
+  if (val === null) return { clase: 'vacio', txt: '—' };
+  const txt = val.toFixed(1) + '%';
+  if (val >= 100)  return { clase: 'verde',    txt };
+  if (val >= 70)   return { clase: 'amarillo', txt };
+  return               { clase: 'rojo',     txt };
+}
+
+function render() {
+  const filtroTL = document.getElementById('filtroTL').value;
+  let lista = ASESORES.filter(a => !filtroTL || a.tl === filtroTL);
+
+  // Ordenar: por categoría, luego por promedio desc
+  lista = lista.map(a => ({ ...a, cat: categoria(a.datos), avg: promedioClasif(a.datos) }));
+  lista.sort((a, b) => {
+    if (a.cat.orden !== b.cat.orden) return a.cat.orden - b.cat.orden;
+    if (a.avg === null && b.avg === null) return 0;
+    if (a.avg === null) return 1;
+    if (b.avg === null) return -1;
+    return b.avg - a.avg;
+  });
+
+  const grupos = [
+    { key: 'cumple',   label: '✓ Cumpliendo — promedio Ene/Feb/Mar ≥ 70%' },
+    { key: 'regular',  label: '~ Regular — promedio Ene/Feb/Mar 20% a 70%' },
+    { key: 'riesgo',   label: '✗ En riesgo — promedio Ene/Feb/Mar < 20%' },
+    { key: 'sin_data', label: 'Sin datos registrados' }
+  ];
+
+  let html = '';
+  grupos.forEach(g => {
+    const filas = lista.filter(a => a.cat.key === g.key);
+    if (!filas.length) return;
+    html += `<tr class="sep-row"><td colspan="11">${g.label}</td></tr>`;
+    filas.forEach(a => {
+      html += `<tr>
+        <td class="col-asesor">${a.nombre}</td>
+        <td class="col-tl">${a.tl}</td>
+        <td><span class="badge ${a.cat.key}">${a.cat.label}</span></td>`;
+      a.datos.forEach(v => {
+        const c = celda(v);
+        html += `<td class="mes ${c.clase}">${c.txt}</td>`;
+      });
+      html += `</tr>`;
+    });
+  });
+
+  document.getElementById('cuerpo').innerHTML = html;
+}
+
+render();
+</script>
+</body>
+</html>
