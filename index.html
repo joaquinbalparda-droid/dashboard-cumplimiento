@@ -128,9 +128,9 @@ function promedio(datos) {
   return vals.reduce((a, b) => a + b, 0) / vals.length;
 }
 
-// Promedio de Feb 26, Mar 26 (índices 5, 6 — excluye Ene y Abr)
+// Promedio de Ene 26, Feb 26, Mar 26 (índices 4, 5, 6)
 function promedioClasif(datos) {
-  const vals = [datos[5], datos[6]].filter(v => v !== null);
+  const vals = [datos[4], datos[5], datos[6]].filter(v => v !== null);
   if (!vals.length) return null;
   return vals.reduce((a, b) => a + b, 0) / vals.length;
 }
@@ -138,9 +138,9 @@ function promedioClasif(datos) {
 function categoria(datos) {
   const avg = promedioClasif(datos);
   if (avg === null) return { key: 'sin_data', label: 'Sin datos', orden: 3 };
-  if (avg >= 70)   return { key: 'cumple',   label: '✓ Cumpliendo', orden: 0 };
-  if (avg >= 20)   return { key: 'regular',  label: '~ Regular',    orden: 1 };
-  return              { key: 'riesgo',   label: '✗ En riesgo',  orden: 2 };
+  if (avg >= 80)   return { key: 'cumple',   label: '✓ Bueno',    orden: 0 };
+  if (avg >= 50)   return { key: 'regular',  label: '~ Regular',  orden: 1 };
+  return              { key: 'riesgo',   label: '✗ Mal',      orden: 2 };
 }
 
 function celda(val) {
@@ -166,9 +166,9 @@ function render() {
   });
 
   const grupos = [
-    { key: 'cumple',   label: '✓ Cumpliendo — promedio Feb/Mar ≥ 70%' },
-    { key: 'regular',  label: '~ Regular — promedio Feb/Mar 20% a 70%' },
-    { key: 'riesgo',   label: '✗ En riesgo — promedio Feb/Mar < 20%' },
+    { key: 'cumple',   label: '✓ Bueno — promedio Ene/Feb/Mar ≥ 80%' },
+    { key: 'regular',  label: '~ Regular — promedio Ene/Feb/Mar 50% a 80%' },
+    { key: 'riesgo',   label: '✗ Mal — promedio Ene/Feb/Mar < 50%' },
     { key: 'sin_data', label: 'Sin datos registrados' }
   ];
 
