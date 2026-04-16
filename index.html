@@ -138,9 +138,9 @@ function promedioClasif(datos) {
 function categoria(datos) {
   const avg = promedioClasif(datos);
   if (avg === null) return { key: 'sin_data', label: 'Sin datos', orden: 3 };
-  if (avg >= 80)   return { key: 'cumple',   label: '✓ Bueno',    orden: 0 };
-  if (avg >= 50)   return { key: 'regular',  label: '~ Regular',  orden: 1 };
-  return              { key: 'riesgo',   label: '✗ Mal',      orden: 2 };
+  if (avg >= 80)   return { key: 'cumple',   label: '✓ En línea',  orden: 0 };
+  if (avg >= 50)   return { key: 'regular',  label: '~ Regular',   orden: 1 };
+  return              { key: 'riesgo',   label: '✗ Crítico',   orden: 2 };
 }
 
 function celda(val) {
@@ -166,9 +166,9 @@ function render() {
   });
 
   const grupos = [
-    { key: 'cumple',   label: '✓ Bueno — promedio Ene/Feb/Mar ≥ 80%' },
+    { key: 'cumple',   label: '✓ En línea — promedio Ene/Feb/Mar ≥ 80%' },
     { key: 'regular',  label: '~ Regular — promedio Ene/Feb/Mar 50% a 80%' },
-    { key: 'riesgo',   label: '✗ Mal — promedio Ene/Feb/Mar < 50%' },
+    { key: 'riesgo',   label: '✗ Crítico — promedio Ene/Feb/Mar < 50%' },
     { key: 'sin_data', label: 'Sin datos registrados' }
   ];
 
